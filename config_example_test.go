@@ -7,7 +7,9 @@ package yaegiconf_test
 import (
 	"fmt"
 	"log"
+	"reflect"
 
+	"github.com/containous/yaegi/interp"
 	"github.com/kortschak/yaegiconf"
 )
 
@@ -27,6 +29,36 @@ func Example_struct() {
 	// Output:
 	//
 	// yaegiconf_test.Config{N:5, F:0.1}
+}
+
+func Example_nestedstruct() {
+	type Sub struct {
+		S string
+	}
+	type Config struct {
+		N int
+		F float64
+		X Sub
+	}
+	s := interp.Exports{"xcfg": map[string]reflect.Value{
+		"Value": reflect.Zero(reflect.TypeOf(&Config{})),
+		"Sub":   reflect.Zero(reflect.TypeOf(&Sub{})),
+	}}
+	var c Config
+	err := yaegiconf.EvalExtTo(&c, `xcfg.Value{
+		N: 5, F: 0.1,
+		X: xcfg.Sub{S: "set"},
+}`,
+		interp.Options{}, s)
+	if err != nil {
+		log.Fatalf("failed to parse configuration: %v", err)
+	}
+
+	fmt.Printf("%#v\n", c)
+
+	// Output:
+	//
+	// yaegiconf_test.Config{N:5, F:0.1, X:yaegiconf_test.Sub{S:"set"}}
 }
 
 func Example_string() {
