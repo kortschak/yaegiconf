@@ -5,6 +5,7 @@
 package yaegiconf_test
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -45,7 +46,7 @@ func Example_nestedstruct() {
 		"Sub":   reflect.Zero(reflect.TypeOf(&Sub{})),
 	}}
 	var c Config
-	err := yaegiconf.EvalExtTo(&c, `xcfg.Value{
+	err := yaegiconf.EvalExtWithContextTo(context.Background(), &c, `xcfg.Value{
 		N: 5, F: 0.1,
 		X: xcfg.Sub{S: "set"},
 }`,
@@ -89,4 +90,19 @@ func Example_map() {
 	// Output:
 	//
 	// yaegiconf_test.Config{"float64":0.1, "int":5}
+}
+
+func Example_timeout() {
+	type Config string
+	var c Config
+	err := yaegiconf.EvalTo(&c, `for {}; config.Value("Configured")`)
+	if err != nil {
+		fmt.Printf("failed to parse configuration: %v", err)
+	}
+
+	fmt.Println(c)
+
+	// Output:
+	//
+	// failed to parse configuration: context deadline exceeded
 }

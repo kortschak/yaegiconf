@@ -7,9 +7,11 @@
 package yaegiconf
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/containous/yaegi/interp"
 )
@@ -18,19 +20,32 @@ import (
 // result of the evaluation into dst, which must be a pointer to
 // a value. The type of the value is accessible within the src via
 // the label config.Value.
+//
+// EvalTo will timeout if it has not completed evaluating src within
+// ten seconds.
 func EvalTo(dst interface{}, src string) error {
-	return EvalExtTo(dst, src, interp.Options{}, interp.Exports{
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	return EvalWithContextTo(ctx, dst, src)
+}
+
+// EvalWithContextTo evaluates the configuration source in src and stores the
+// result of the evaluation into dst, which must be a pointer to a value.
+//
+// EvalWithContextTo allows the user to provide a cancellation context to the
+// evaluation.
+func EvalWithContextTo(ctx context.Context, dst interface{}, src string) error {
+	return EvalExtWithContextTo(ctx, dst, src, interp.Options{}, interp.Exports{
 		"config": map[string]reflect.Value{
 			"Value": reflect.Zero(reflect.TypeOf(dst))}})
 }
 
-// EvalExtTo evaluates the configuration source in src and stores the
-// result of the evaluation into dst, which must be a pointer to
-// a value.
+// EvalExtWithContextTo evaluates the configuration source in src and stores the
+// result of the evaluation into dst, which must be a pointer to a value.
 //
-// EvalExtTo allows the user to provide access to additional types and
-// interpreter configuration.
-func EvalExtTo(dst interface{}, src string, options interp.Options, symbols ...interp.Exports) error {
+// EvalExtWithContextTo allows the user to provide a cancellation context and
+// access to additional types and interpreter configuration.
+func EvalExtWithContextTo(ctx context.Context, dst interface{}, src string, options interp.Options, symbols ...interp.Exports) error {
 	rv := reflect.ValueOf(dst)
 	if rv.Kind() != reflect.Ptr {
 		return errors.New("yaegiconf: invalid config type")
@@ -40,14 +55,14 @@ func EvalExtTo(dst interface{}, src string, options interp.Options, symbols ...i
 	for _, m := range symbols {
 		i.Use(m)
 		for p := range m {
-			_, err := i.Eval(fmt.Sprintf("import %q", p))
+			_, err := i.EvalWithContext(ctx, fmt.Sprintf("import %q", p))
 			if err != nil {
 				return err
 			}
 		}
 	}
 
-	v, err := i.Eval(src)
+	v, err := i.EvalWithContext(ctx, src)
 	if err != nil {
 		return err
 	}

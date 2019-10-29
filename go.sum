@@ -1,2 +1,4 @@
 github.com/containous/yaegi v0.6.0 h1:KeXfkUf8X5oWv1TCbnAkXgy+IfLlDIyxeYBOaeHDnGU=
 github.com/containous/yaegi v0.6.0/go.mod h1:RLj4MAvN8JB1w40l4fn9dd/U1hH23CXABvro3D3gOBE=
+github.com/containous/yaegi v0.6.3-0.20191029171405-3969ab16c497 h1:pz9d49JqBAooxwBa4lq/gDfXKqtO+Ykt4uDymkRinOo=
+github.com/containous/yaegi v0.6.3-0.20191029171405-3969ab16c497/go.mod h1:Yj82MHpXQ9/h3ukzc2numJQ/Wr4+M3C9YLMzNjFtd3o=
