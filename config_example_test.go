@@ -10,7 +10,8 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/containous/yaegi/interp"
+	"github.com/traefik/yaegi/interp"
+
 	"github.com/kortschak/yaegiconf"
 )
 

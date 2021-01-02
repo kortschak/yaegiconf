@@ -13,7 +13,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/containous/yaegi/interp"
+	"github.com/traefik/yaegi/interp"
 )
 
 // EvalTo evaluates the configuration source in src and stores the
