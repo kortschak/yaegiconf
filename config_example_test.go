@@ -42,7 +42,7 @@ func Example_nestedstruct() {
 		F float64
 		X Sub
 	}
-	s := interp.Exports{"xcfg": map[string]reflect.Value{
+	s := interp.Exports{"xcfg/xcfg": map[string]reflect.Value{
 		"Value": reflect.Zero(reflect.TypeOf(&Config{})),
 		"Sub":   reflect.Zero(reflect.TypeOf(&Sub{})),
 	}}

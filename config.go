@@ -36,7 +36,7 @@ func EvalTo(dst interface{}, src string) error {
 // evaluation.
 func EvalWithContextTo(ctx context.Context, dst interface{}, src string) error {
 	return EvalExtWithContextTo(ctx, dst, src, interp.Options{}, interp.Exports{
-		"config": map[string]reflect.Value{
+		"config/config": map[string]reflect.Value{
 			"Value": reflect.Zero(reflect.TypeOf(dst))}})
 }
 
@@ -53,7 +53,10 @@ func EvalExtWithContextTo(ctx context.Context, dst interface{}, src string, opti
 
 	i := interp.New(options)
 	for _, m := range symbols {
-		i.Use(m)
+		err := i.Use(m)
+		if err != nil {
+			return err
+		}
 		for p := range m {
 			_, err := i.EvalWithContext(ctx, fmt.Sprintf("import %q", p))
 			if err != nil {
