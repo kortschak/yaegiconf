@@ -20,13 +20,13 @@ func Example_struct() {
 		N int
 		F float64
 	}
-	var c Config
-	err := yaegiconf.EvalTo(&c, `config.Value{N: 5, F: 0.1}`)
+	var cfg Config
+	err := yaegiconf.EvalTo(&cfg, `config.Value{N: 5, F: 0.1}`)
 	if err != nil {
 		log.Fatalf("failed to parse configuration: %v", err)
 	}
 
-	fmt.Printf("%#v\n", c)
+	fmt.Printf("%#v\n", cfg)
 
 	// Output:
 	//
@@ -46,8 +46,8 @@ func Example_nestedstruct() {
 		"Value": reflect.Zero(reflect.TypeOf(&Config{})),
 		"Sub":   reflect.Zero(reflect.TypeOf(&Sub{})),
 	}}
-	var c Config
-	err := yaegiconf.EvalExtWithContextTo(context.Background(), &c, `xcfg.Value{
+	var cfg Config
+	err := yaegiconf.EvalExtWithContextTo(context.Background(), &cfg, `xcfg.Value{
 		N: 5, F: 0.1,
 		X: xcfg.Sub{S: "set"},
 }`,
@@ -56,7 +56,7 @@ func Example_nestedstruct() {
 		log.Fatalf("failed to parse configuration: %v", err)
 	}
 
-	fmt.Printf("%#v\n", c)
+	fmt.Printf("%#v\n", cfg)
 
 	// Output:
 	//
@@ -64,14 +64,13 @@ func Example_nestedstruct() {
 }
 
 func Example_string() {
-	type Config string
-	var c Config
-	err := yaegiconf.EvalTo(&c, `config.Value("Configured")`)
+	var cfg string
+	err := yaegiconf.EvalTo(&cfg, `config.Value("Configured")`)
 	if err != nil {
 		log.Fatalf("failed to parse configuration: %v", err)
 	}
 
-	fmt.Printf("%#v\n", c)
+	fmt.Printf("%#v\n", cfg)
 
 	// Output:
 	//
@@ -79,29 +78,28 @@ func Example_string() {
 }
 
 func Example_map() {
-	type Config map[string]interface{}
-	var c Config
-	err := yaegiconf.EvalTo(&c, `config.Value{"int": 5, "float64": 0.1}`)
+	var cfg map[string]interface{}
+	err := yaegiconf.EvalTo(&cfg, `config.Value{"int": 5, "float64": 0.1}`)
 	if err != nil {
 		log.Fatalf("failed to parse configuration: %v", err)
 	}
 
-	fmt.Printf("%#v\n", c)
+	fmt.Printf("%#v\n", cfg)
 
 	// Output:
 	//
-	// yaegiconf_test.Config{"float64":0.1, "int":5}
+	// map[string]interface {}{"float64":0.1, "int":5}
 }
 
 func Example_timeout() {
 	type Config string
-	var c Config
-	err := yaegiconf.EvalTo(&c, `for {}; config.Value("Configured")`)
+	var cfg Config
+	err := yaegiconf.EvalTo(&cfg, `for {}; config.Value("Configured")`)
 	if err != nil {
 		fmt.Printf("failed to parse configuration: %v", err)
 	}
 
-	fmt.Println(c)
+	fmt.Println(cfg)
 
 	// Output:
 	//
